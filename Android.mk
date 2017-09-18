@@ -16,11 +16,18 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := thermal.msm8998
+LOCAL_MODULE := thermal.$(TARGET_BOARD_PLATFORM)
 LOCAL_MODULE_RELATIVE_PATH := hw
 LOCAL_PROPRIETARY_MODULE := true
 LOCAL_SRC_FILES := thermal.c
+
+ifeq ($(call is-board-platform-in-list,msm8998), true)
 LOCAL_SRC_FILES += thermal-8998.c
+endif
+
+ifeq ($(call is-board-platform-in-list,sdm845), true)
+LOCAL_SRC_FILES += thermal-845.c
+endif
 
 LOCAL_SHARED_LIBRARIES := liblog libcutils
 LOCAL_MODULE_TAGS := optional
