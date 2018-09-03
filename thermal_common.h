@@ -29,6 +29,17 @@
 #include <hardware/thermal.h>
 #define ARRAY_SIZE(x) (int)(sizeof(x)/sizeof(x[0]))
 
+enum therm_msm_id {
+    THERM_MSM_UNKNOWN = 0,
+    THERM_MSM_8953,
+    THERM_SDM_660,
+    THERM_SDM_630,
+    THERM_SDM_710,
+    THERM_QCS_605,
+    THERM_SDM_632,
+    THERM_SDM_439,
+};
+
 struct target_therm_cfg {
     enum temperature_type type;
     char **sensor_list;
@@ -46,6 +57,8 @@ struct vendor_temperature {
     temperature_t t;
 };
 
+
+int read_line_from_file(const char *path, char *buf, size_t count);
 size_t get_num_cpus();
 const char *get_cpu_label(unsigned int cpu_num);
 int thermal_zone_init(struct target_therm_cfg *v_sen_t, int cfg_cnt);

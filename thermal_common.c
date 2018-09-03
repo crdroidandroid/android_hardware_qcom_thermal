@@ -96,7 +96,7 @@ const char *get_cpu_label(unsigned int cpu_num) {
  *
  * @return number of bytes read on success or negative value on error.
  */
-static int read_line_from_file(const char *path, char *buf, size_t count)
+int read_line_from_file(const char *path, char *buf, size_t count)
 {
     char * fgets_ret;
     FILE * fd;
