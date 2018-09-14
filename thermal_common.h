@@ -38,6 +38,7 @@ enum therm_msm_id {
     THERM_QCS_605,
     THERM_SDM_632,
     THERM_SDM_439,
+    THERM_MSMNILE,
 };
 
 struct target_therm_cfg {

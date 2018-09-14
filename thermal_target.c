@@ -65,6 +65,58 @@ static struct therm_msm_soc_type msm_soc_table[] = {
     {THERM_SDM_439, 354},
     {THERM_SDM_439, 363},
     {THERM_SDM_439, 364},
+    {THERM_MSMNILE, 339},
+    {THERM_MSMNILE, 362},
+    {THERM_MSMNILE, 367},
+};
+
+static char *cpu_sensors_msmnile[] =
+{
+    "cpu-0-0-usr",
+    "cpu-0-1-usr",
+    "cpu-0-2-usr",
+    "cpu-0-3-usr",
+    "cpu-1-0-usr",
+    "cpu-1-1-usr",
+    "cpu-1-2-usr",
+    "cpu-1-3-usr",
+};
+
+static char *misc_sensors_msmnile[] =
+{
+    "gpuss-0-usr",
+    "battery",
+    "xo-therm"
+};
+
+static struct target_therm_cfg sensor_cfg_msmnile[] = {
+    {
+        .type = DEVICE_TEMPERATURE_CPU,
+        .sensor_list = cpu_sensors_msmnile,
+        .sens_cnt = ARRAY_SIZE(cpu_sensors_msmnile),
+        .mult = 0.001,
+    },
+    {
+        .type = DEVICE_TEMPERATURE_GPU,
+        .sensor_list = &misc_sensors_msmnile[0],
+        .sens_cnt = 1,
+        .mult = 0.001,
+        .label = "GPU",
+    },
+    {
+        .type = DEVICE_TEMPERATURE_BATTERY,
+        .sensor_list = &misc_sensors_msmnile[1],
+        .sens_cnt = 1,
+        .mult = 0.001,
+        .label = "battery",
+    },
+    {
+        .type = DEVICE_TEMPERATURE_SKIN,
+        .sensor_list = &misc_sensors_msmnile[2],
+        .sens_cnt = 1,
+        .mult = 0.001,
+        .label = "skin",
+    }
 };
 
 static char *cpu_sensors_660[] =
@@ -429,6 +481,10 @@ ssize_t get_temperatures(thermal_module_t *module, temperature_t *list, size_t s
             case THERM_SDM_439:
                 cfg = sensor_cfg_439;
                 num_cfg = ARRAY_SIZE(sensor_cfg_439);
+                break;
+            case THERM_MSMNILE:
+                cfg = sensor_cfg_msmnile;
+                num_cfg = ARRAY_SIZE(sensor_cfg_msmnile);
                 break;
             default:
                 cfg = NULL;
