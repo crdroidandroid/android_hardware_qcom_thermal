@@ -58,6 +58,7 @@ static struct therm_msm_soc_type msm_soc_table[] = {
     {THERM_SDM_630, 385},
     {THERM_SDM_710, 336},
     {THERM_SDM_710, 337},
+    {THERM_SDM_710, 393}, // This SOC ID is for SDM712
     {THERM_QCS_605, 347},
     {THERM_SDM_632, 349},
     {THERM_SDM_632, 350},
