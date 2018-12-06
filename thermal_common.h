@@ -41,6 +41,7 @@ enum therm_msm_id {
     THERM_MSMNILE,
     THERM_TALOS,
     THERM_SDMMAGPIE,
+    THERM_MSM_8917,
 };
 
 struct target_therm_cfg {
