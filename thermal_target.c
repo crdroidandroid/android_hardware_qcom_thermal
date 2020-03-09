@@ -87,6 +87,7 @@ static struct therm_msm_soc_type msm_soc_table[] = {
     {THERM_BENGAL,  445},
     {THERM_BENGAL,  420},
     {THERM_LAGOON,  434},
+    {THERM_LAHAINA,  415},
 };
 
 static char *gen_sensors_list[] =
@@ -825,6 +826,7 @@ ssize_t get_temperatures(thermal_module_t *module, temperature_t *list, size_t s
                 num_cfg = ARRAY_SIZE(sensor_cfg_msmnile);
                 break;
             case THERM_KONA:
+            case THERM_LAHAINA:
 		cfg = sensor_cfg_kona;
 		num_cfg = ARRAY_SIZE(sensor_cfg_kona);
 		break;

@@ -48,6 +48,7 @@ enum therm_msm_id {
     THERM_ATOLL,
     THERM_BENGAL,
     THERM_LAGOON,
+    THERM_LAHAINA,
 };
 
 struct target_therm_cfg {
