@@ -66,7 +66,7 @@ class ThermalUtils {
                                             hidl_vec<TemperatureThreshold> *thresh);
 		int readCdevStates(bool filterType, cdevType type,
                                             hidl_vec<CoolingDevice> *cdev);
-		int fetchCpuUsages(hidl_vec<CpuUsage> *cpu_usages);
+		int fetchCpuUsages(hidl_vec<CpuUsage>& cpu_usages);
 	private:
 		bool is_sensor_init;
 		bool is_cdev_init;
