@@ -212,7 +212,7 @@ int ThermalUtils::readCdevStates(bool filterType, cdevType type,
 	return cdev_out->size();
 }
 
-int ThermalUtils::fetchCpuUsages(hidl_vec<CpuUsage> *cpu_usages)
+int ThermalUtils::fetchCpuUsages(hidl_vec<CpuUsage>& cpu_usages)
 {
 	return cmnInst.get_cpu_usages(cpu_usages);
 }

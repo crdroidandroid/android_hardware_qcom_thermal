@@ -109,7 +109,7 @@ Return<void> Thermal::getCpuUsages(getCpuUsages_cb _hidl_cb)
 	if (!utils.isSensorInitialized())
 		return exit_hal(_hidl_cb, cpu_usages,
 			"ThermalHAL not initialized properly.");
-	if (utils.fetchCpuUsages(&cpu_usages) <= 0)
+	if (utils.fetchCpuUsages(cpu_usages) <= 0)
 		return exit_hal(_hidl_cb, cpu_usages,
 				"CPU usage read failure.");
 

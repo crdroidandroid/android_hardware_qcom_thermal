@@ -52,7 +52,7 @@ class ThermalCommon {
 		int read_cdev_state(struct therm_cdev *cdev);
 		int read_temperature(struct therm_sensor *sensor);
 		int estimateSeverity(struct therm_sensor *sensor);
-		int get_cpu_usages(hidl_vec<CpuUsage> *list);
+		int get_cpu_usages(hidl_vec<CpuUsage>& list);
 
 		std::vector<struct therm_sensor> fetch_sensor_list()
 		{
