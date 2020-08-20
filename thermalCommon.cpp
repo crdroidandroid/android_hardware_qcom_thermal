@@ -505,7 +505,7 @@ void ThermalCommon::initThreshold(struct therm_sensor sensor)
 	return;
 }
 
-int ThermalCommon::get_cpu_usages(hidl_vec<CpuUsage> *list) {
+int ThermalCommon::get_cpu_usages(hidl_vec<CpuUsage>& list) {
 	int vals, cpu_num, online;
 	ssize_t read;
 	uint64_t user, nice, system, idle, active, total;
@@ -516,6 +516,7 @@ int ThermalCommon::get_cpu_usages(hidl_vec<CpuUsage> *list) {
 	FILE *file;
 	FILE *cpu_file;
 
+	list.resize(ncpus);
 	file = fopen(CPU_USAGE_FILE, "r");
 	if (file == NULL) {
 		LOG(ERROR) << "failed to open:" << CPU_USAGE_FILE <<
@@ -574,10 +575,10 @@ int ThermalCommon::get_cpu_usages(hidl_vec<CpuUsage> *list) {
 		}
 		fclose(cpu_file);
 
-		(*list)[cpu_num].name = std::string("CPU") + std::to_string(cpu_num);
-		(*list)[cpu_num].active = active;
-		(*list)[cpu_num].total = total;
-		(*list)[cpu_num].isOnline = online;
+		list[cpu_num].name = std::string("CPU") + std::to_string(cpu_num);
+		list[cpu_num].active = active;
+		list[cpu_num].total = total;
+		list[cpu_num].isOnline = online;
 		cpu++;
 	}
 	fclose(file);
