@@ -249,21 +249,21 @@ int ThermalCommon::initialize_sensor(struct target_therm_cfg cfg, int sens_idx)
 
 	if (cfg.throt_thresh != 0 && cfg.positive_thresh_ramp)
 		sensor.thresh.hotThrottlingThresholds[(size_t)ThrottlingSeverity::SEVERE - 1] =
-			cfg.throt_thresh;
+			cfg.throt_thresh / (float)sensor.mulFactor;
 	else if (cfg.throt_thresh != 0 && !cfg.positive_thresh_ramp)
 		sensor.thresh.coldThrottlingThresholds[(size_t)ThrottlingSeverity::SEVERE - 1] =
-			cfg.throt_thresh;
+			cfg.throt_thresh / (float)sensor.mulFactor;
 
 	if (cfg.shutdwn_thresh != 0 && cfg.positive_thresh_ramp)
 		sensor.thresh.hotThrottlingThresholds[(size_t)ThrottlingSeverity::SHUTDOWN - 1] =
-			cfg.shutdwn_thresh;
+			cfg.shutdwn_thresh / (float)sensor.mulFactor;
 	else if (cfg.shutdwn_thresh != 0 && !cfg.positive_thresh_ramp)
 		sensor.thresh.coldThrottlingThresholds[(size_t)ThrottlingSeverity::SHUTDOWN - 1] =
-			cfg.shutdwn_thresh;
+			cfg.shutdwn_thresh / (float)sensor.mulFactor;
 
 	if (cfg.vr_thresh != 0)
 		sensor.thresh.vrThrottlingThreshold =
-			cfg.vr_thresh;
+			cfg.vr_thresh / (float)sensor.mulFactor;
 	sens.push_back(sensor);
 	//read_temperature((struct therm_sensor *)sensor);
 
@@ -394,7 +394,7 @@ int ThermalCommon::estimateSeverity(struct therm_sensor *sensor)
 {
 	int idx = 0;
 	ThrottlingSeverity severity = ThrottlingSeverity::NONE;
-	float temp = sensor->t.value * sensor->mulFactor;
+	float temp = sensor->t.value;
 
 	for (idx = (int)ThrottlingSeverity::SHUTDOWN - 1; idx >= 0; idx--) {
 		if ((sensor->positiveThresh &&
@@ -477,7 +477,8 @@ void ThermalCommon::initThreshold(struct therm_sensor sensor)
 			|| idx <= ((int)sensor.t.throttlingStatus) - 1)
 			continue;
 
-		next_trip = sensor.thresh.hotThrottlingThresholds[idx];
+		next_trip = sensor.thresh.hotThrottlingThresholds[idx] *
+				sensor.mulFactor;
 		break;
 	}
 
@@ -490,7 +491,8 @@ void ThermalCommon::initThreshold(struct therm_sensor sensor)
 	}
 	if (sensor.t.throttlingStatus != ThrottlingSeverity::NONE) {
 		curr_trip = sensor.thresh.hotThrottlingThresholds[
-				(int)sensor.t.throttlingStatus - 1];
+				(int)sensor.t.throttlingStatus - 1]
+					* sensor.mulFactor;
 		if (!isnan(next_trip))
 			hyst_temp = (next_trip - curr_trip) + DEFAULT_HYSTERESIS;
 		else
