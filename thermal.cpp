@@ -264,9 +264,17 @@ void Thermal::sendThrottlingChangeCB(const Temperature &t)
 	LOG(DEBUG) << "Throttle Severity change: " << " Type: " << (int)t.type
 		<< " Name: " << t.name << " Value: " << t.value <<
 		" ThrottlingStatus: " << (int)t.throttlingStatus;
-	for (it = cb.begin(); it != cb.end(); it++) {
-		if (!it->is_filter_type || it->type == t.type)
-			it->callback->notifyThrottling(t);
+	it = cb.begin();
+	while (it != cb.end()) {
+		if (!it->is_filter_type || it->type == t.type) {
+			Return<void> ret = it->callback->notifyThrottling(t);
+			if (!ret.isOk()) {
+				LOG(ERROR) << "Notify callback execution error. Removing";
+				it = cb.erase(it);
+				continue;
+			}
+		}
+		it++;
 	}
 }
 
