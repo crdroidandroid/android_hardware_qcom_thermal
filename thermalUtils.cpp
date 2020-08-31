@@ -126,9 +126,9 @@ int ThermalUtils::readTemperatures(hidl_vec<Temperature_1_0>& temp)
 		_temp.name = sens.t.name;
 		_temp.type = (TemperatureType_1_0)sens.t.type;
 		_temp.throttlingThreshold = sens.thresh.hotThrottlingThresholds[
-					(size_t)ThrottlingSeverity::SEVERE - 1];
+					(size_t)ThrottlingSeverity::SEVERE];
 		_temp.shutdownThreshold = sens.thresh.hotThrottlingThresholds[
-					(size_t)ThrottlingSeverity::SHUTDOWN - 1];
+					(size_t)ThrottlingSeverity::SHUTDOWN];
 		_temp.vrThrottlingThreshold = sens.thresh.vrThrottlingThreshold;
 		_temp_v.push_back(_temp);
 	}

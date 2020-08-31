@@ -241,24 +241,24 @@ int ThermalCommon::initialize_sensor(struct target_therm_cfg cfg, int sens_idx)
 	sensor.thresh.type = sensor.t.type = cfg.type;
 	sensor.thresh.vrThrottlingThreshold =
 	UNKNOWN_TEMPERATURE;
-	for (idx = 0; idx < (size_t)ThrottlingSeverity::SHUTDOWN; idx++) {
+	for (idx = 0; idx <= (size_t)ThrottlingSeverity::SHUTDOWN; idx++) {
 		sensor.thresh.hotThrottlingThresholds[idx] =
 		sensor.thresh.coldThrottlingThresholds[idx] =
 			UNKNOWN_TEMPERATURE;
 	}
 
 	if (cfg.throt_thresh != 0 && cfg.positive_thresh_ramp)
-		sensor.thresh.hotThrottlingThresholds[(size_t)ThrottlingSeverity::SEVERE - 1] =
+		sensor.thresh.hotThrottlingThresholds[(size_t)ThrottlingSeverity::SEVERE] =
 			cfg.throt_thresh / (float)sensor.mulFactor;
 	else if (cfg.throt_thresh != 0 && !cfg.positive_thresh_ramp)
-		sensor.thresh.coldThrottlingThresholds[(size_t)ThrottlingSeverity::SEVERE - 1] =
+		sensor.thresh.coldThrottlingThresholds[(size_t)ThrottlingSeverity::SEVERE] =
 			cfg.throt_thresh / (float)sensor.mulFactor;
 
 	if (cfg.shutdwn_thresh != 0 && cfg.positive_thresh_ramp)
-		sensor.thresh.hotThrottlingThresholds[(size_t)ThrottlingSeverity::SHUTDOWN - 1] =
+		sensor.thresh.hotThrottlingThresholds[(size_t)ThrottlingSeverity::SHUTDOWN] =
 			cfg.shutdwn_thresh / (float)sensor.mulFactor;
 	else if (cfg.shutdwn_thresh != 0 && !cfg.positive_thresh_ramp)
-		sensor.thresh.coldThrottlingThresholds[(size_t)ThrottlingSeverity::SHUTDOWN - 1] =
+		sensor.thresh.coldThrottlingThresholds[(size_t)ThrottlingSeverity::SHUTDOWN] =
 			cfg.shutdwn_thresh / (float)sensor.mulFactor;
 
 	if (cfg.vr_thresh != 0)
@@ -396,7 +396,7 @@ int ThermalCommon::estimateSeverity(struct therm_sensor *sensor)
 	ThrottlingSeverity severity = ThrottlingSeverity::NONE;
 	float temp = sensor->t.value;
 
-	for (idx = (int)ThrottlingSeverity::SHUTDOWN - 1; idx >= 0; idx--) {
+	for (idx = (int)ThrottlingSeverity::SHUTDOWN; idx >= 0; idx--) {
 		if ((sensor->positiveThresh &&
 			!isnan(sensor->thresh.hotThrottlingThresholds[idx]) &&
 			temp >=
@@ -408,7 +408,7 @@ int ThermalCommon::estimateSeverity(struct therm_sensor *sensor)
 			break;
 	}
 	if (idx >= 0)
-		severity = (ThrottlingSeverity)(idx + 1);
+		severity = (ThrottlingSeverity)(idx);
 	LOG(DEBUG) << "Sensor Name:" << sensor->t.name << ". old severity:" <<
 		(int)sensor->t.throttlingStatus << " New severity:" <<
 		(int)severity << std::endl;
@@ -472,9 +472,9 @@ void ThermalCommon::initThreshold(struct therm_sensor sensor)
 	}
 
 	next_trip = UNKNOWN_TEMPERATURE;
-	for (idx = 0;idx < (int)ThrottlingSeverity::SHUTDOWN; idx++) {
+	for (idx = 0;idx <= (int)ThrottlingSeverity::SHUTDOWN; idx++) {
 		if (isnan(sensor.thresh.hotThrottlingThresholds[idx])
-			|| idx <= ((int)sensor.t.throttlingStatus) - 1)
+			|| idx <= (int)sensor.t.throttlingStatus)
 			continue;
 
 		next_trip = sensor.thresh.hotThrottlingThresholds[idx] *
@@ -491,7 +491,7 @@ void ThermalCommon::initThreshold(struct therm_sensor sensor)
 	}
 	if (sensor.t.throttlingStatus != ThrottlingSeverity::NONE) {
 		curr_trip = sensor.thresh.hotThrottlingThresholds[
-				(int)sensor.t.throttlingStatus - 1]
+				(int)sensor.t.throttlingStatus]
 					* sensor.mulFactor;
 		if (!isnan(next_trip))
 			hyst_temp = (next_trip - curr_trip) + DEFAULT_HYSTERESIS;
