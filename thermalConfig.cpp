@@ -112,6 +112,55 @@ namespace implementation {
 		},
 	};
 
+	std::vector<struct target_therm_cfg> sensor_cfg_holi =
+	{
+		{
+			TemperatureType::CPU,
+			cpu_sensors_lito,
+			"",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-0-usr" },
+			"gpu0",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-1-usr" },
+			"gpu1",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::SKIN,
+			{ "quiet-therm-usr" },
+			"skin",
+			40000,
+			95000,
+			40000,
+			true,
+		},
+		{
+			TemperatureType::BCL_CURRENT,
+			{ "pm7250b-ibat-lvl0" },
+			"ibat",
+			5500,
+			6000,
+			5500,
+			true,
+		},
+	};
+
 	std::vector<std::string> cpu_sensors_kona =
 	{
 		"cpu-0-0-usr",
@@ -280,6 +329,7 @@ namespace implementation {
 		{434, sensor_cfg_lito}, // lagoon
 		{356, kona_common}, // kona
 		{415, kona_common}, // lahaina
+		{454, sensor_cfg_holi}, // holi
 	};
 
 	const std::unordered_map<int, std::vector<struct target_therm_cfg>>
