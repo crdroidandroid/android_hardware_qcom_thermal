@@ -390,6 +390,7 @@ namespace implementation {
 		{440, sensor_cfg_lito},
 		{407, sensor_cfg_lito}, // atoll
 		{434, sensor_cfg_lito}, // lagoon
+		{476, sensor_cfg_lito}, // orchid
 		{356, kona_common}, // kona
 		{415, lahaina_common}, // lahaina
 		{439, lahaina_common}, // lahainap
