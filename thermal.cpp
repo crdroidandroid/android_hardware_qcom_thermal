@@ -90,7 +90,7 @@ Return<void> Thermal::getTemperatures(getTemperatures_cb _hidl_cb)
 		return exit_hal(_hidl_cb, temperatures,
 			"ThermalHAL not initialized properly.");
 
-	if (!utils.readTemperatures(&temperatures))
+	if (utils.readTemperatures(temperatures) <= 0)
 		return exit_hal(_hidl_cb, temperatures,
 				"Sensor Temperature read failure.");
 
@@ -143,7 +143,7 @@ Return<void> Thermal::getCurrentCoolingDevices(
 	if (!utils.isCdevInitialized())
 		return exit_hal(_hidl_cb, cdev,
 			"ThermalHAL not initialized properly.");
-	if (!utils.readCdevStates(filterType, type, &cdev))
+	if (utils.readCdevStates(filterType, type, cdev) <= 0)
 		return exit_hal(_hidl_cb, cdev,
 			"Failed to read thermal cooling devices.");
 
@@ -164,7 +164,7 @@ Return<void> Thermal::getCurrentTemperatures(
 		return exit_hal(_hidl_cb, temperatures,
 			"ThermalHAL not initialized properly.");
 
-	if (!utils.readTemperatures(filterType, type, &temperatures))
+	if (utils.readTemperatures(filterType, type, temperatures) <= 0)
 		return exit_hal(_hidl_cb, temperatures,
 				"Sensor Temperature read failure.");
 
@@ -186,9 +186,9 @@ Return<void> Thermal::getTemperatureThresholds(
 		return exit_hal(_hidl_cb, thresh,
 			"ThermalHAL not initialized properly.");
 
-	if (!utils.readTemperatureThreshold(filterType, type, &thresh))
+	if (utils.readTemperatureThreshold(filterType, type, thresh) <= 0)
 		return exit_hal(_hidl_cb, thresh,
-				"Sensor Temperature threshold read failure.");
+		"Sensor Threshold read failure or type not supported.");
 
 	_hidl_cb(status, thresh);
 
@@ -203,7 +203,6 @@ Return<void> Thermal::registerThermalChangedCallback(
 {
 	ThermalStatus status;
 	std::lock_guard<std::mutex> _lock(thermal_cb_mutex);
-	std::vector<CallbackSetting>::iterator it;
 
         status.code = ThermalStatusCode::SUCCESS;
 	if (callback == nullptr)
@@ -213,8 +212,8 @@ Return<void> Thermal::registerThermalChangedCallback(
 		return exit_hal(_hidl_cb,
 			"BCL current and voltage notification not supported");
 
-	for (it = cb.begin(); it != cb.end(); it++) {
-		if (interfacesEqual(it->callback, callback))
+	for (CallbackSetting _cb: cb) {
+		if (interfacesEqual(_cb.callback, callback))
 			return exit_hal(_hidl_cb,
 				"Same callback interface registered already");
 	}
@@ -264,9 +263,17 @@ void Thermal::sendThrottlingChangeCB(const Temperature &t)
 	LOG(DEBUG) << "Throttle Severity change: " << " Type: " << (int)t.type
 		<< " Name: " << t.name << " Value: " << t.value <<
 		" ThrottlingStatus: " << (int)t.throttlingStatus;
-	for (it = cb.begin(); it != cb.end(); it++) {
-		if (!it->is_filter_type || it->type == t.type)
-			it->callback->notifyThrottling(t);
+	it = cb.begin();
+	while (it != cb.end()) {
+		if (!it->is_filter_type || it->type == t.type) {
+			Return<void> ret = it->callback->notifyThrottling(t);
+			if (!ret.isOk()) {
+				LOG(ERROR) << "Notify callback execution error. Removing";
+				it = cb.erase(it);
+				continue;
+			}
+		}
+		it++;
 	}
 }
 

@@ -112,6 +112,55 @@ namespace implementation {
 		},
 	};
 
+	std::vector<struct target_therm_cfg> sensor_cfg_holi =
+	{
+		{
+			TemperatureType::CPU,
+			cpu_sensors_lito,
+			"",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-0-usr" },
+			"gpu0",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-1-usr" },
+			"gpu1",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::SKIN,
+			{ "quiet-therm-usr" },
+			"skin",
+			40000,
+			95000,
+			40000,
+			true,
+		},
+		{
+			TemperatureType::BCL_CURRENT,
+			{ "pm7250b-ibat-lvl0" },
+			"ibat",
+			5500,
+			6000,
+			5500,
+			true,
+		},
+	};
+
 	std::vector<std::string> cpu_sensors_kona =
 	{
 		"cpu-0-0-usr",
@@ -196,20 +245,59 @@ namespace implementation {
 			{ "npu-usr" },
 			"npu",
 			95000,
-			105000,
+			115000,
 			95000,
 			true,
 		},
 	};
 
-	std::vector<struct target_therm_cfg>  lahaina_specific = {
+	std::vector<std::string> cpu_sensors_lahaina =
+	{
+		"cpu-0-0-usr",
+		"cpu-0-1-usr",
+		"cpu-0-2-usr",
+		"cpu-0-3-usr",
+		"cpu-1-0-usr",
+		"cpu-1-2-usr",
+		"cpu-1-4-usr",
+		"cpu-1-6-usr",
+	};
+
+	std::vector<struct target_therm_cfg>  lahaina_common = {
+		{
+			TemperatureType::CPU,
+			cpu_sensors_lahaina,
+			"",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-0-usr" },
+			"GPU0",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-1-usr" },
+			"GPU1",
+			95000,
+			115000,
+			95000,
+			true,
+		},
 		{
 			TemperatureType::BCL_CURRENT,
 			{ "pm8350b-ibat-lvl0" },
 			"ibat",
-			4500,
-			5000,
-			4500,
+			6000,
+			7500,
+			6000,
 			true,
 		},
 		{
@@ -217,7 +305,7 @@ namespace implementation {
 			{ "nspss-0-usr" },
 			"nsp0",
 			95000,
-			105000,
+			115000,
 			95000,
 			true,
 		},
@@ -226,7 +314,7 @@ namespace implementation {
 			{ "nspss-1-usr" },
 			"nsp1",
 			95000,
-			105000,
+			115000,
 			95000,
 			true,
 		},
@@ -235,8 +323,32 @@ namespace implementation {
 			{ "nspss-2-usr" },
 			"nsp2",
 			95000,
-			105000,
+			115000,
 			95000,
+			true,
+		},
+	};
+
+	std::vector<struct target_therm_cfg>  lahaina_specific = {
+		{
+			TemperatureType::SKIN,
+			{ "skin-msm-therm-usr" },
+			"skin",
+			40000,
+			95000,
+			40000,
+			true,
+		},
+	};
+
+	std::vector<struct target_therm_cfg>  shima_specific = {
+		{
+			TemperatureType::SKIN,
+			{ "quiet-therm-usr" },
+			"skin",
+			40000,
+			95000,
+			40000,
 			true,
 		},
 	};
@@ -278,14 +390,22 @@ namespace implementation {
 		{440, sensor_cfg_lito},
 		{407, sensor_cfg_lito}, // atoll
 		{434, sensor_cfg_lito}, // lagoon
+		{476, sensor_cfg_lito}, // orchid
 		{356, kona_common}, // kona
-		{415, kona_common}, // lahaina
+		{415, lahaina_common}, // lahaina
+		{439, lahaina_common}, // lahainap
+		{456, lahaina_common}, // lahaina-atp
+		{450, lahaina_common}, // shima
+		{454, sensor_cfg_holi}, // holi
 	};
 
 	const std::unordered_map<int, std::vector<struct target_therm_cfg>>
 		msm_soc_specific = {
 		{356, kona_specific}, // kona
 		{415, lahaina_specific}, // lahaina
+		{439, lahaina_specific}, // lahainap
+		{456, lahaina_specific}, // lahaina-atp
+		{450, shima_specific}, // shima
 	};
 
 	std::vector<struct target_therm_cfg> add_target_config(
