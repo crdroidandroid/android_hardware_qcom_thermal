@@ -51,6 +51,15 @@ namespace implementation {
 
 using ::android::hardware::interfacesEqual;
 
+static const Temperature_1_0 dummy_temp_1_0 = {
+	.type = TemperatureType_1_0::SKIN,
+	.name = "test sensor",
+	.currentValue = 30,
+	.throttlingThreshold = 40,
+	.shutdownThreshold = 60,
+	.vrThrottlingThreshold = 40,
+};
+
 template <typename A, typename B>
 Return<void> exit_hal(A _cb, hidl_vec<B> _data, std::string_view _msg) {
 	ThermalStatus _status;
@@ -86,9 +95,12 @@ Return<void> Thermal::getTemperatures(getTemperatures_cb _hidl_cb)
 	hidl_vec<Temperature_1_0> temperatures;
 
 	status.code = ThermalStatusCode::SUCCESS;
-	if (!utils.isSensorInitialized())
-		return exit_hal(_hidl_cb, temperatures,
-			"ThermalHAL not initialized properly.");
+	if (!utils.isSensorInitialized()) {
+		std::vector<Temperature_1_0> _temp = {dummy_temp_1_0};
+		LOG(INFO) << "Returning Dummy Value" << std::endl;
+		_hidl_cb(status, _temp);
+		return Void();
+	}
 
 	if (utils.readTemperatures(temperatures) <= 0)
 		return exit_hal(_hidl_cb, temperatures,
@@ -106,9 +118,6 @@ Return<void> Thermal::getCpuUsages(getCpuUsages_cb _hidl_cb)
 	hidl_vec<CpuUsage> cpu_usages;
 
 	status.code = ThermalStatusCode::SUCCESS;
-	if (!utils.isSensorInitialized())
-		return exit_hal(_hidl_cb, cpu_usages,
-			"ThermalHAL not initialized properly.");
 	if (utils.fetchCpuUsages(cpu_usages) <= 0)
 		return exit_hal(_hidl_cb, cpu_usages,
 				"CPU usage read failure.");
@@ -123,9 +132,6 @@ Return<void> Thermal::getCoolingDevices(getCoolingDevices_cb _hidl_cb)
 	hidl_vec<CoolingDevice_1_0> cdev;
 
 	status.code = ThermalStatusCode::SUCCESS;
-	if (!utils.isCdevInitialized())
-		return exit_hal(_hidl_cb, cdev,
-			"ThermalHAL not initialized properly.");
 	/* V1 Cdev requires only Fan Support. */
 	_hidl_cb(status, cdev);
 	return Void();
