@@ -79,7 +79,7 @@ namespace implementation {
 			{ "xo-therm-usr" },
 			"skin",
 			40000,
-			45000,
+			95000,
 			40000,
 			true,
 		},
