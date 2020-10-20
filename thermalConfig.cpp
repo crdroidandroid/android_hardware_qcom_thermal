@@ -42,6 +42,77 @@ namespace V2_0 {
 namespace implementation {
 	constexpr std::string_view socIDPath("/sys/devices/soc0/soc_id");
 
+
+	std::vector<std::string> cpu_sensors_trinket =
+	{
+		"cpuss-0-usr",
+		"cpuss-0-usr",
+		"cpuss-0-usr",
+		"cpuss-0-usr",
+		"cpu-1-0-usr",
+		"cpu-1-1-usr",
+		"cpu-1-2-usr",
+		"cpu-1-3-usr",
+	};
+
+	std::vector<struct target_therm_cfg> sensor_cfg_trinket =
+	{
+		{
+			TemperatureType::CPU,
+			cpu_sensors_trinket,
+			"",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpu-usr" },
+			"GPU",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::SKIN,
+			{ "xo-therm-adc" },
+			"skin",
+			40000,
+			95000,
+			40000,
+			true,
+		},
+		{
+			TemperatureType::BCL_VOLTAGE,
+			{ "pmi632-vbat-lvl0" },
+			"vbat",
+			3000,
+			2800,
+			3000,
+			false,
+		},
+		{
+			TemperatureType::BCL_CURRENT,
+			{ "pmi632-ibat-lvl0" },
+			"ibat",
+			4000,
+			4200,
+			4000,
+			true,
+		},
+		{
+			TemperatureType::BCL_PERCENTAGE,
+			{ "soc" },
+			"soc",
+			10,
+			2,
+			10,
+			false,
+		},
+	};
+
 	std::vector<std::string> cpu_sensors_lito =
 	{
 		"cpu-0-0-usr",
@@ -100,6 +171,64 @@ namespace implementation {
 			3000,
 			3200,
 			false,
+		},
+		{
+			TemperatureType::BCL_PERCENTAGE,
+			{ "soc" },
+			"soc",
+			10,
+			2,
+			10,
+			false,
+		},
+	};
+
+	std::vector<struct target_therm_cfg> sensor_cfg_sdmmagpie =
+	{
+		{
+			TemperatureType::CPU,
+			cpu_sensors_lito,
+			"",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-0-usr" },
+			"GPU",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::SKIN,
+			{ "xo-therm-adc" },
+			"skin",
+			40000,
+			95000,
+			40000,
+			true,
+		},
+		{
+			TemperatureType::BCL_VOLTAGE,
+			{ "pm6150-vbat-lvl0" },
+			"vbat",
+			3000,
+			2800,
+			3000,
+			false,
+		},
+		{
+			TemperatureType::BCL_CURRENT,
+			{ "pm6150-ibat-lvl0" },
+			"ibat",
+			5500,
+			6000,
+			5500,
+			true,
 		},
 		{
 			TemperatureType::BCL_PERCENTAGE,
@@ -386,9 +515,14 @@ namespace implementation {
 
 	const std::unordered_map<int, std::vector<struct target_therm_cfg>>
 		msm_soc_map = {
+		{394, sensor_cfg_trinket},
+		{467, sensor_cfg_trinket},
+		{468, sensor_cfg_trinket},
 		{400, sensor_cfg_lito}, // lito
 		{440, sensor_cfg_lito},
 		{407, sensor_cfg_lito}, // atoll
+		{365, sensor_cfg_sdmmagpie},
+		{366, sensor_cfg_sdmmagpie},
 		{434, sensor_cfg_lito}, // lagoon
 		{476, sensor_cfg_lito}, // orchid
 		{356, kona_common}, // kona

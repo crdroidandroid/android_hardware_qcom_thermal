@@ -383,7 +383,7 @@ int ThermalCommon::read_cdev_state(struct therm_cdev *cdev)
 			" for cdev: " << cdev->c.name;
 		return -1;
 	}
-	cdev->c.value = std::stoi(buf, nullptr, 0);
+	cdev->c.value = std::stoi(buf);
 	LOG(DEBUG) << "cdev Name:" << cdev->c.name << ". state:" <<
 		cdev->c.value << std::endl;
 
@@ -436,7 +436,7 @@ int ThermalCommon::read_temperature(struct therm_sensor *sensor)
 			" for sensor " << sensor->t.name;
 		return -1;
 	}
-	sensor->t.value = (float)std::stoi(buf, nullptr, 0) / (float)sensor->mulFactor;
+	sensor->t.value = (float)std::stoi(buf) / (float)sensor->mulFactor;
 	LOG(DEBUG) << "Sensor Name:" << sensor->t.name << ". Temperature:" <<
 		(float)sensor->t.value << std::endl;
 
