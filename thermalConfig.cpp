@@ -461,11 +461,11 @@ namespace implementation {
 	std::vector<struct target_therm_cfg>  lahaina_specific = {
 		{
 			TemperatureType::SKIN,
-			{ "skin-msm-therm-usr" },
+			{ "xo-therm-usr" },
 			"skin",
-			40000,
+			55000,
 			95000,
-			40000,
+			55000,
 			true,
 		},
 	};
