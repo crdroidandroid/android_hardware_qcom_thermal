@@ -634,7 +634,7 @@ namespace implementation {
 		bool bcl_defined = false;
 		std::string soc_val;
 
-		if (cmnInst.readFromFile(socIDPath, &soc_val) <= 0) {
+		if (cmnInst.readFromFile(socIDPath, soc_val) <= 0) {
 			LOG(ERROR) <<"soc ID fetch error";
 			return;
 		}
