@@ -54,19 +54,19 @@ ThermalUtils::ThermalUtils(const ueventCB &inp_cb):
 {
 	int ret = 0;
 	std::vector<struct therm_sensor> sensorList;
-	std::vector<struct therm_sensor>::iterator it;
+	std::vector<struct target_therm_cfg> therm_cfg = cfg.fetchConfig();
 
 	is_sensor_init = false;
 	is_cdev_init = false;
-	ret = cmnInst.initThermalZones(cfg.fetchConfig());
+	ret = cmnInst.initThermalZones(therm_cfg);
 	if (ret > 0) {
 		is_sensor_init = true;
 		sensorList = cmnInst.fetch_sensor_list();
 		std::lock_guard<std::mutex> _lock(sens_cb_mutex);
-		for (it = sensorList.begin(); it != sensorList.end(); it++) {
-			thermalConfig[it->sensor_name] = *it;
-			cmnInst.read_temperature(&(*it));
-			cmnInst.initThreshold(*it);
+		for (struct therm_sensor sens: sensorList) {
+			thermalConfig[sens.sensor_name] = sens;
+			cmnInst.read_temperature(sens);
+			cmnInst.initThreshold(sens);
 		}
 		monitor.start();
 	}
@@ -79,23 +79,22 @@ ThermalUtils::ThermalUtils(const ueventCB &inp_cb):
 
 void ThermalUtils::ueventParse(std::string sensor_name, int temp)
 {
-	std::unordered_map<std::string, struct therm_sensor>::iterator it;
-	struct therm_sensor sens;
+	int severity = 0;
 
 	LOG(INFO) << "uevent triggered for sensor: " << sensor_name
 		<< std::endl;
-	it = thermalConfig.find(sensor_name);
-	if (it == thermalConfig.end()) {
+	if (thermalConfig.find(sensor_name) == thermalConfig.end()) {
 		LOG(DEBUG) << "sensor is not monitored:" << sensor_name
 			<< std::endl;
 		return;
 	}
-	sens = it->second;
 	std::lock_guard<std::mutex> _lock(sens_cb_mutex);
+	struct therm_sensor& sens = thermalConfig[sensor_name];
 	sens.t.value = (float)temp / (float)sens.mulFactor;
-	cmnInst.estimateSeverity(&sens);
-	if (sens.lastThrottleStatus != sens.t.throttlingStatus) {
-		LOG(INFO) << "sensor: " << sensor_name <<" old: " <<
+	severity = cmnInst.estimateSeverity(sens);
+	if (severity != -1) {
+		LOG(INFO) << "sensor: " << sensor_name <<" temperature: "
+			<< sens.t.value << " old: " <<
 			(int)sens.lastThrottleStatus << " new: " <<
 			(int)sens.t.throttlingStatus << std::endl;
 		cb(sens.t);
@@ -113,13 +112,13 @@ int ThermalUtils::readTemperatures(hidl_vec<Temperature_1_0>& temp)
 		return 0;
 	for (it = thermalConfig.begin(); it != thermalConfig.end();
 			it++, idx++) {
-		struct therm_sensor sens = it->second;
+		struct therm_sensor& sens = it->second;
 		Temperature_1_0 _temp;
 
 		/* v1 supports only CPU, GPU, Battery and SKIN */
 		if (sens.t.type > TemperatureType::SKIN)
 			continue;
-		ret = cmnInst.read_temperature(&sens);
+		ret = cmnInst.read_temperature(sens);
 		if (ret < 0)
 			return ret;
 		_temp.currentValue = sens.t.value;
@@ -145,11 +144,11 @@ int ThermalUtils::readTemperatures(bool filterType, TemperatureType type,
 	std::vector<Temperature> _temp;
 
 	for (it = thermalConfig.begin(); it != thermalConfig.end(); it++) {
-		struct therm_sensor sens = it->second;
+		struct therm_sensor& sens = it->second;
 
 		if (filterType && sens.t.type != type)
 			continue;
-		ret = cmnInst.read_temperature(&sens);
+		ret = cmnInst.read_temperature(sens);
 		if (ret < 0)
 			return ret;
 		_temp.push_back(sens.t);
@@ -166,7 +165,7 @@ int ThermalUtils::readTemperatureThreshold(bool filterType, TemperatureType type
 	std::vector<TemperatureThreshold> _thresh;
 
 	for (it = thermalConfig.begin(); it != thermalConfig.end(); it++) {
-		struct therm_sensor sens = it->second;
+		struct therm_sensor& sens = it->second;
 
 		if (filterType && sens.t.type != type)
 			continue;
@@ -187,7 +186,7 @@ int ThermalUtils::readCdevStates(bool filterType, cdevType type,
 
 		if (filterType && cdev.c.type != type)
 			continue;
-		ret = cmnInst.read_cdev_state(&cdev);
+		ret = cmnInst.read_cdev_state(cdev);
 		if (ret < 0)
 			return ret;
 		_cdev.push_back(cdev.c);
