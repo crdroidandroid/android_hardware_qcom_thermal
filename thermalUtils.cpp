@@ -66,6 +66,7 @@ ThermalUtils::ThermalUtils(const ueventCB &inp_cb):
 		for (struct therm_sensor sens: sensorList) {
 			thermalConfig[sens.sensor_name] = sens;
 			cmnInst.read_temperature(sens);
+			cmnInst.estimateSeverity(sens);
 			cmnInst.initThreshold(sens);
 		}
 		monitor.start();
@@ -77,10 +78,21 @@ ThermalUtils::ThermalUtils(const ueventCB &inp_cb):
 	}
 }
 
+void ThermalUtils::Notify(struct therm_sensor& sens)
+{
+	int severity = cmnInst.estimateSeverity(sens);
+	if (severity != -1) {
+		LOG(INFO) << "sensor: " << sens.sensor_name <<" temperature: "
+			<< sens.t.value << " old: " <<
+			(int)sens.lastThrottleStatus << " new: " <<
+			(int)sens.t.throttlingStatus << std::endl;
+		cb(sens.t);
+		cmnInst.initThreshold(sens);
+	}
+}
+
 void ThermalUtils::ueventParse(std::string sensor_name, int temp)
 {
-	int severity = 0;
-
 	LOG(INFO) << "uevent triggered for sensor: " << sensor_name
 		<< std::endl;
 	if (thermalConfig.find(sensor_name) == thermalConfig.end()) {
@@ -91,15 +103,7 @@ void ThermalUtils::ueventParse(std::string sensor_name, int temp)
 	std::lock_guard<std::mutex> _lock(sens_cb_mutex);
 	struct therm_sensor& sens = thermalConfig[sensor_name];
 	sens.t.value = (float)temp / (float)sens.mulFactor;
-	severity = cmnInst.estimateSeverity(sens);
-	if (severity != -1) {
-		LOG(INFO) << "sensor: " << sensor_name <<" temperature: "
-			<< sens.t.value << " old: " <<
-			(int)sens.lastThrottleStatus << " new: " <<
-			(int)sens.t.throttlingStatus << std::endl;
-		cb(sens.t);
-		cmnInst.initThreshold(sens);
-	}
+	return Notify(sens);
 }
 
 int ThermalUtils::readTemperatures(hidl_vec<Temperature_1_0>& temp)
@@ -110,6 +114,7 @@ int ThermalUtils::readTemperatures(hidl_vec<Temperature_1_0>& temp)
 
 	if (!is_sensor_init)
 		return 0;
+	std::lock_guard<std::mutex> _lock(sens_cb_mutex);
 	for (it = thermalConfig.begin(); it != thermalConfig.end();
 			it++, idx++) {
 		struct therm_sensor& sens = it->second;
@@ -121,6 +126,7 @@ int ThermalUtils::readTemperatures(hidl_vec<Temperature_1_0>& temp)
 		ret = cmnInst.read_temperature(sens);
 		if (ret < 0)
 			return ret;
+		Notify(sens);
 		_temp.currentValue = sens.t.value;
 		_temp.name = sens.t.name;
 		_temp.type = (TemperatureType_1_0)sens.t.type;
@@ -143,6 +149,7 @@ int ThermalUtils::readTemperatures(bool filterType, TemperatureType type,
 	int ret = 0;
 	std::vector<Temperature> _temp;
 
+	std::lock_guard<std::mutex> _lock(sens_cb_mutex);
 	for (it = thermalConfig.begin(); it != thermalConfig.end(); it++) {
 		struct therm_sensor& sens = it->second;
 
@@ -151,6 +158,7 @@ int ThermalUtils::readTemperatures(bool filterType, TemperatureType type,
 		ret = cmnInst.read_temperature(sens);
 		if (ret < 0)
 			return ret;
+		Notify(sens);
 		_temp.push_back(sens.t);
 	}
 
