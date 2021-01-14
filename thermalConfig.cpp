@@ -665,6 +665,8 @@ namespace implementation {
 		{365, sensor_cfg_sdmmagpie},
 		{366, sensor_cfg_sdmmagpie},
 		{434, sensor_cfg_lito}, // lagoon
+		{435, sensor_cfg_lito},
+		{459, sensor_cfg_lito},
 		{476, sensor_cfg_lito}, // orchid
 		{339, sensor_cfg_msmnile},
 		{361, sensor_cfg_msmnile},
