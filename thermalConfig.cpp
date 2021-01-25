@@ -42,6 +42,75 @@ namespace V2_0 {
 namespace implementation {
 	constexpr std::string_view socIDPath("/sys/devices/soc0/soc_id");
 
+	std::vector<std::string> cpu_sensors_bengal =
+	{
+		"cpuss-2-usr",
+		"cpuss-2-usr",
+		"cpuss-2-usr",
+		"cpuss-2-usr",
+		"cpu-1-0-usr",
+		"cpu-1-1-usr",
+		"cpu-1-2-usr",
+		"cpu-1-3-usr",
+	};
+
+	std::vector<struct target_therm_cfg> sensor_cfg_bengal =
+	{
+		{
+			TemperatureType::CPU,
+			cpu_sensors_bengal,
+			"",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpu-usr" },
+			"GPU",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::SKIN,
+			{ "xo-therm-usr" },
+			"skin",
+			40000,
+			95000,
+			40000,
+			true,
+		},
+		{
+			TemperatureType::BCL_VOLTAGE,
+			{ "pmi632-vbat-lvl0" },
+			"vbat",
+			3000,
+			2800,
+			3000,
+			false,
+		},
+		{
+			TemperatureType::BCL_CURRENT,
+			{ "pmi632-ibat-lvl0" },
+			"ibat",
+			4000,
+			4200,
+			4000,
+			true,
+		},
+		{
+			TemperatureType::BCL_PERCENTAGE,
+			{ "soc" },
+			"soc",
+			10,
+			2,
+			10,
+			false,
+		},
+	};
 
 	std::vector<std::string> cpu_sensors_trinket =
 	{
@@ -548,6 +617,63 @@ namespace implementation {
 		},
 	};
 
+	std::vector<struct target_therm_cfg>  sensor_cfg_yupik = {
+		{
+			TemperatureType::CPU,
+			cpu_sensors_lahaina,
+			"",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-0-usr" },
+			"GPU0",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::GPU,
+			{ "gpuss-1-usr" },
+			"GPU1",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::NPU,
+			{ "nspss-0-usr" },
+			"nsp0",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::NPU,
+			{ "nspss-1-usr" },
+			"nsp1",
+			95000,
+			115000,
+			95000,
+			true,
+		},
+		{
+			TemperatureType::SKIN,
+			{ "quiet-therm-usr" },
+			"skin",
+			40000,
+			95000,
+			40000,
+			true,
+		},
+	};
+
 	struct target_therm_cfg bat_conf = {
 		TemperatureType::BATTERY,
 		{ "battery" },
@@ -581,6 +707,12 @@ namespace implementation {
 
 	const std::unordered_map<int, std::vector<struct target_therm_cfg>>
 		msm_soc_map = {
+		{417, sensor_cfg_bengal}, // bengal
+		{420, sensor_cfg_bengal},
+		{444, sensor_cfg_bengal},
+		{445, sensor_cfg_bengal},
+		{469, sensor_cfg_bengal},
+		{470, sensor_cfg_bengal},
 		{394, sensor_cfg_trinket},
 		{467, sensor_cfg_trinket},
 		{468, sensor_cfg_trinket},
@@ -590,6 +722,8 @@ namespace implementation {
 		{365, sensor_cfg_sdmmagpie},
 		{366, sensor_cfg_sdmmagpie},
 		{434, sensor_cfg_lito}, // lagoon
+		{435, sensor_cfg_lito},
+		{459, sensor_cfg_lito},
 		{476, sensor_cfg_lito}, // orchid
 		{339, sensor_cfg_msmnile},
 		{361, sensor_cfg_msmnile},
@@ -601,6 +735,7 @@ namespace implementation {
 		{456, lahaina_common}, // lahaina-atp
 		{450, lahaina_common}, // shima
 		{454, sensor_cfg_holi}, // holi
+		{475, sensor_cfg_yupik}, // yupik
 	};
 
 	const std::unordered_map<int, std::vector<struct target_therm_cfg>>

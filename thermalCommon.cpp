@@ -457,7 +457,6 @@ int ThermalCommon::read_temperature(struct therm_sensor& sensor)
 	LOG(DEBUG) << "Sensor Name:" << sensor.t.name << ". Temperature:" <<
 		(float)sensor.t.value << std::endl;
 
-	estimateSeverity(sensor);
 	return ret;
 }
 
