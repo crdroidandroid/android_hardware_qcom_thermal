@@ -733,9 +733,12 @@ namespace implementation {
 		{415, lahaina_common}, // lahaina
 		{439, lahaina_common}, // lahainap
 		{456, lahaina_common}, // lahaina-atp
+		{501, lahaina_common},
+		{502, lahaina_common},
 		{450, lahaina_common}, // shima
 		{454, sensor_cfg_holi}, // holi
 		{475, sensor_cfg_yupik}, // yupik
+		{515, sensor_cfg_yupik}, // YUPIK-LTE
 	};
 
 	const std::unordered_map<int, std::vector<struct target_therm_cfg>>
@@ -744,6 +747,8 @@ namespace implementation {
 		{415, lahaina_specific}, // lahaina
 		{439, lahaina_specific}, // lahainap
 		{456, lahaina_specific}, // lahaina-atp
+		{501, lahaina_specific},
+		{502, lahaina_specific},
 		{450, shima_specific}, // shima
 	};
 
