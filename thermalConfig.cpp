@@ -875,6 +875,7 @@ namespace implementation {
 		{502, lahaina_common},
 		{450, lahaina_common}, // shima
 		{454, sensor_cfg_holi}, // holi
+		{507, sensor_cfg_holi}, // blair
 		{475, sensor_cfg_yupik}, // yupik
 		{515, sensor_cfg_yupik}, // YUPIK-LTE
 	};
